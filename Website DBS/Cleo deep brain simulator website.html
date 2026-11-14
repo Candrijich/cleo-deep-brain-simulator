@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Brain Stimulation</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        pastelblue: {
+                            50: '#f0f7ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            900: '#0c4a6e'
+                        },
+                        pastelpink: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            900: '#881337'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f8fafc;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pastelblue-50 via-white to-pastelpink-50 text-slate-700 font-sans flex flex-col min-h-screen">
+
+    <!-- Header Navigation -->
+    <header class="bg-white/90 backdrop-blur-md border-b border-pastelblue-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Title -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-pastelblue-300 via-pastelpink-200 to-pastelpink-300 flex items-center justify-center text-pastelblue-600 font-bold text-xl shadow-inner border border-white">
+                        DBS
+                    </div>
+                    <div>
+                        <span class="font-bold text-lg text-slate-800 leading-tight block">Deep Brain Stimulation</span>
+                        <span class="text-xs text-pastelpink-500 font-medium block">Science as a Human Endeavour</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs (Desktop) -->
+                <nav class="hidden lg:flex items-center space-x-1 overflow-x-auto py-1">
+                    <button onclick="switchTab('home')" id="nav-home" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition bg-pastelpink-100 text-pastelpink-600 border border-pastelpink-200">
+                        <span>Overview</span>
+                    </button>
+                    <button onclick="switchTab('epilepsy')" id="nav-epilepsy" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-pastelblue-50 hover:text-pastelblue-600 transition">
+                        <span>Epilepsy</span>
+                    </button>
+                    <button onclick="switchTab('parkinsons')" id="nav-parkinsons" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-pastelblue-50 hover:text-pastelblue-600 transition">
+                        <span>Parkinson's</span>
+                    </button>
+                    <button onclick="switchTab('ocd')" id="nav-ocd" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-pastelblue-50 hover:text-pastelblue-600 transition">
+                        <span>OCD</span>
+                    </button>
+                    <button onclick="switchTab('dystonia')" id="nav-dystonia" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-pastelblue-50 hover:text-pastelblue-600 transition">
+                        <span>Dystonia</span>
+                    </button>
+                    <button onclick="switchTab('tremor')" id="nav-tremor" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-pastelblue-50 hover:text-pastelblue-600 transition">
+                        <span>Essential Tremor</span>
+                    </button>
+                    <button onclick="switchTab('howdbs')" id="nav-howdbs" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-pastelblue-50 hover:text-pastelblue-600 transition">
+                        <span>How DBS Works</span>
+                    </button>
+                    <button onclick="switchTab('conclusion')" id="nav-conclusion" class="nav-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-pastelblue-50 hover:text-pastelblue-600 transition">
+                        <span>Conclusion & Bibliography</span>
+                    </button>
+                </nav>
+
+                <!-- Mobile Menu Toggle Button -->
+                <button onclick="toggleMobileMenu()" class="lg:hidden text-slate-600 hover:text-slate-900 p-2 font-bold text-sm">
+                    Menu
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-b border-pastelblue-100 px-4 py-3 space-y-1 shadow-lg">
+            <button onclick="switchTab('home')" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-pastelblue-50">1. Overview & Hardware</button>
+            <button onclick="switchTab('epilepsy')" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-pastelblue-50">2. Epilepsy</button>
+            <button onclick="switchTab('parkinsons')" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-pastelblue-50">3. Parkinson's Disease</button>
+            <button onclick="switchTab('ocd')" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-pastelblue-50">4. OCD</button>
+            <button onclick="switchTab('dystonia')" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-pastelblue-50">5. Dystonia</button>
+            <button onclick="switchTab('tremor')" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-pastelblue-50">6. Essential Tremor</button>
+            <button onclick="switchTab('howdbs')" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-pastelblue-50">7. How DBS Works & Research</button>
+            <button onclick="switchTab('conclusion')" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-pastelblue-50">8. Conclusion & Bibliography</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- PAGE 1: OVERVIEW & HARDWARE -->
+        <div id="page-home" class="page-content">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-r from-pastelblue-100 via-white to-pastelpink-100 rounded-3xl p-6 sm:p-10 shadow-sm border border-pastelpink-200 mb-8 relative overflow-hidden">
+                <div class="relative z-10 max-w-2xl">
+                    <span class="bg-white/80 backdrop-blur text-pastelpink-600 text-xs font-bold px-3 py-1 rounded-full border border-pastelpink-200 inline-block mb-3 shadow-xs">
+                        Medical Technology Overview
+                    </span>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-800 tracking-tight mb-4">
+                        Deep Brain Stimulation: <br><span class="text-pastelblue-600">The Brain Pacemaker</span>
+                    </h1>
+                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6">
+                        Deep Brain Stimulation (DBS) is a neurosurgical intervention that delivers controlled electrical impulses to targeted deep brain structures. By overriding abnormal neural activity, DBS helps restore normal communication within disrupted brain circuits.
+                    </p>
+                    <button onclick="switchTab('howdbs')" class="bg-pastelpink-500 hover:bg-pastelpink-600 text-white font-bold px-5 py-2.5 rounded-2xl shadow-md transition text-sm">
+                        Explore Device Mechanics
+                    </button>
+                </div>
+            </div>
+
+            <!-- Inquiry Research Questions Box -->
+            <div class="bg-pastelblue-50/70 rounded-3xl p-6 sm:p-8 border border-pastelblue-200 mb-8 shadow-sm">
+                <h3 class="font-bold text-slate-800 text-base mb-3">Guiding Research Questions</h3>
+                <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm text-slate-700">
+                    <li><strong>Question 1:</strong> How do cellular firing imbalances in specific deep brain nuclei (structure) disrupt normal motor, cognitive, and electrical pathways (function)?</li>
+                    <li><strong>Question 2:</strong> In what ways do high-frequency electrical pulses delivered by DBS regulate or override hypersynchronized pathological brain waves?</li>
+                    <li><strong>Question 3:</strong> What are the primary clinical benefits, technical limitations, and physiological risks associated with chronic neurostimulation?</li>
+                </ul>
+            </div>
+
+            <!-- Overview Concepts -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pastelblue-100 hover:border-pastelpink-300 transition">
+                    <div class="w-12 h-12 bg-pastelblue-100 text-pastelblue-600 rounded-xl flex items-center justify-center font-bold text-sm mb-4">
+                        DBS
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base mb-2">What is DBS?</h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        A surgically implanted medical system consisting of an electrical pulse generator (battery), extension cables, and thin electrode leads targeted at deep brain centers.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pastelblue-100 hover:border-pastelpink-300 transition">
+                    <div class="w-12 h-12 bg-pastelpink-100 text-pastelpink-500 rounded-xl flex items-center justify-center font-bold text-sm mb-4">
+                        JAM
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base mb-2">Signal Jamming</h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        DBS delivers continuous high-frequency electrical pulses that interrupt and override chaotic or over-synchronized pathological noise within neural circuits.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-pastelblue-100 hover:border-pastelpink-300 transition">
+                    <div class="w-12 h-12 bg-pastelblue-100 text-pastelblue-600 rounded-xl flex items-center justify-center font-bold text-sm mb-4">
+                        REV
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-base mb-2">Adjustable & Reversible</h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        DBS does not permanently destroy brain tissue. External programmers allow clinicians to fine-tune voltage and pulse frequency, or turn off stimulation completely.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Hardware Breakdown Section -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-pastelblue-100">
+                <h2 class="text-xl font-bold text-slate-800 mb-6">Hardware Component Breakdown</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Merged Component 1 & 2 -->
+                    <div class="bg-gradient-to-br from-pastelblue-50/70 to-pastelpink-50/70 rounded-2xl p-5 border border-pastelblue-200 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-pastelblue-600 uppercase tracking-tight block mb-1">Components 1 & 2</span>
+                            <h3 class="font-bold text-slate-800 text-base mb-2">Implantable Pulse Generator (IPG) & Extension Wires</h3>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+                                A titanium-encased, battery-powered computer surgically placed beneath the collarbone that generates customizable electrical pulses. Insulated extension wiring tunnels under the skin of the neck and scalp to securely bridge the IPG battery to the deep brain leads.
+                            </p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-pastelblue-200 text-center shadow-xs">
+                            <img src="Component1.jpg" alt="Chest X-ray showing implanted Pulse Generators (IPG) and insulated extension leads" class="w-full max-h-64 object-contain mx-auto rounded-lg" onerror="this.src='Component1.png';">
+                            <p class="text-xs text-slate-500 mt-2 italic">Chest X-ray showing implanted Pulse Generators and insulated extension leads</p>
+                        </div>
+                    </div>
+
+                    <!-- Component 3 with Component2.jpg -->
+                    <div class="bg-pastelblue-50/50 rounded-2xl p-5 border border-pastelblue-100 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-pastelblue-600 uppercase tracking-tight block mb-1">Component 3</span>
+                            <h3 class="font-bold text-slate-800 text-base mb-2">Deep Brain Electrodes</h3>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+                                Hair-thin polyurethane leads featuring microscopic platinum-iridium contact points inserted precisely into target subcortical nuclei.
+                            </p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-pastelblue-200 text-center shadow-xs">
+                            <img src="Component2.jpg" alt="Deep Brain Electrodes and Lead Placement" class="w-full max-h-64 object-contain mx-auto rounded-lg" onerror="this.src='Component2.png';">
+                            <p class="text-xs text-slate-500 mt-2 italic">Deep Brain Electrodes and Lead Placement</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2: EPILEPSY -->
+        <div id="page-epilepsy" class="page-content hidden">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-pastelpink-200 mb-8">
+                <div class="max-w-3xl">
+                    <span class="bg-pastelpink-100 text-pastelpink-600 text-xs font-bold px-3 py-1 rounded-full border border-pastelpink-200 inline-block mb-3">
+                        Condition Focus: Epilepsy
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight mb-4">
+                        Epilepsy & Anterior Thalamic Nucleus Modulation
+                    </h2>
+                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6">
+                        <strong>Structure ? Function ? Problem:</strong> Epilepsy involves neurons and glia organized within limbic and thalamocortical networks. Normally, these networks maintain asynchronous firing. In epilepsy, structural or chemical disruptions cause hypersynchronized electrical discharges, resulting in unpredictable seizures. DBS targets the <strong>Anterior Nucleus of the Thalamus (ANT)</strong> to regulate these circuits.
+                    </p>
+                </div>
+
+                <!-- MTT Memory Loop Section -->
+                <div class="bg-pastelblue-50/60 rounded-2xl p-6 border border-pastelblue-200 mb-8">
+                    <h3 class="font-bold text-slate-800 text-base mb-3 text-pastelblue-900">Mammillothalamic Tract (MTT) Memory Loop</h3>
+                    <p class="text-slate-700 text-sm leading-relaxed mb-4">
+                        Your Mammillothalamic Tract (MTT) brings your memory loop together:
+                    </p>
+                    <ul class="list-disc pl-5 space-y-2 text-xs sm:text-sm text-slate-700 mb-6">
+                        <li>It takes heavily processed spatial and chronological data from the hippocampus (via the mammillary bodies).</li>
+                        <li>It shoots that information up into the thalamus, which acts as the brain's grand central relay station.</li>
+                        <li>Without this bridge, your brain's memory centers cannot talk to its conscious processing centers.</li>
+                    </ul>
+
+                    <!-- EPILEPSY IMAGE -->
+                    <div class="bg-white p-4 sm:p-6 rounded-2xl border border-pastelblue-200 shadow-sm text-center max-w-2xl mx-auto">
+                        <img src="Epilepsy.jpg" alt="Stereotactic reconstruction of DBS lead trajectories targeting ANT and MTT memory pathway" class="w-full rounded-xl shadow-md border border-slate-200" onerror="this.src='Epilepsy.jpg.png';">
+                        <p class="text-xs text-slate-500 mt-3 italic leading-relaxed">
+                            MRI stereotactic reconstruction of DBS lead trajectories targeting ANT (blue) and MTT memory pathway (yellow).
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 3-Stage Signal Comparison -->
+                <h3 class="font-bold text-slate-800 text-lg mb-4">Neuronal Signal Comparison</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+                        <span class="text-xs font-bold text-pastelblue-600 uppercase tracking-tight block mb-1">Stage 1</span>
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Normal Brain Wave</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Stable, asynchronous electrical baseline rhythms during regular cognitive activity and sensory processing.
+                        </p>
+                    </div>
+
+                    <div class="bg-pastelpink-50/70 rounded-2xl p-5 border border-pastelpink-200">
+                        <span class="text-xs font-bold text-pastelpink-500 uppercase tracking-tight block mb-1">Stage 2</span>
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Pathological Wave</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            High-amplitude, sharp spike-and-wave discharges spreading rapidly across synchronized cerebral networks during seizure activity.
+                        </p>
+                    </div>
+
+                    <div class="bg-pastelblue-50/70 rounded-2xl p-5 border border-pastelblue-200">
+                        <span class="text-xs font-bold text-pastelblue-600 uppercase tracking-tight block mb-1">Stage 3</span>
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Post-DBS Modulation</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            High-frequency stimulation disrupts hypersynchrony, suppressing seizure propagation and restoring regular electrical patterns.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 3: PARKINSON'S DISEASE -->
+        <div id="page-parkinsons" class="page-content hidden">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-pastelblue-200 mb-8">
+                <div class="max-w-3xl mb-6">
+                    <span class="bg-pastelblue-100 text-pastelblue-600 text-xs font-bold px-3 py-1 rounded-full border border-pastelblue-200 inline-block mb-3">
+                        Condition Focus: Parkinson's Disease
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight mb-4">
+                        Parkinson's Disease & Basal Ganglia Circuits
+                    </h2>
+                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-4">
+                        <strong>Structure ? Function ? Problem:</strong> Parkinson's involves the degeneration of dopamine-producing dopaminergic neurons within the substantia nigra pars compacta. Normally, dopamine balances direct and indirect basal ganglia motor loops. Its loss leads to abnormal beta-band hyper-synchronization in the <strong>Subthalamic Nucleus (STN)</strong>, causing tremors and rigidity.
+                    </p>
+                </div>
+
+                <!-- PARKINSON'S IMAGE -->
+                <div class="bg-white p-4 sm:p-6 rounded-2xl border border-pastelblue-200 shadow-sm text-center max-w-2xl mx-auto mb-8">
+                    <img src="Parkinsons.jpg" alt="Basal Ganglia Motor Loop and STN DBS Lead Placement Diagram" class="w-full rounded-xl shadow-md border border-slate-200" onerror="this.src='Parkinsons.png';">
+                    <p class="text-xs text-slate-500 mt-3 italic leading-relaxed">
+                        Basal Ganglia Motor Loop and STN Targeting Diagram
+                    </p>
+                </div>
+
+                <h3 class="font-bold text-slate-800 text-lg mb-4">Neuronal Signal Comparison</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+                        <span class="text-xs font-bold text-pastelblue-600 uppercase tracking-tight block mb-1">Stage 1</span>
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Normal Brain Wave</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Balanced gamma and beta band oscillations facilitating smooth voluntary motor control and movement initiation.
+                        </p>
+                    </div>
+
+                    <div class="bg-pastelpink-50/70 rounded-2xl p-5 border border-pastelpink-200">
+                        <span class="text-xs font-bold text-pastelpink-500 uppercase tracking-tight block mb-1">Stage 2</span>
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Pathological Wave</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Excessive 13–30 Hz beta-band synchronization locking motor circuits and causing rigidity, tremors, and bradykinesia.
+                        </p>
+                    </div>
+
+                    <div class="bg-pastelblue-50/70 rounded-2xl p-5 border border-pastelblue-200">
+                        <span class="text-xs font-bold text-pastelblue-600 uppercase tracking-tight block mb-1">Stage 3</span>
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Post-DBS Modulation</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Continuous high-frequency pulses jam pathological beta synchrony, unlocking fluid motor output and reducing tremors.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 4: OCD -->
+        <div id="page-ocd" class="page-content hidden">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-pastelpink-200 mb-8">
+                <div class="max-w-3xl mb-6">
+                    <span class="bg-pastelpink-100 text-pastelpink-600 text-xs font-bold px-3 py-1 rounded-full border border-pastelpink-200 inline-block mb-3">
+                        Condition Focus: Obsessive-Compulsive Disorder
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight mb-4">
+                        Obsessive-Compulsive Disorder (OCD) & CSTC Circuits
+                    </h2>
+                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-4">
+                        <strong>Structure ? Function ? Problem:</strong> Severe OCD involves fronto-striatal networks connecting the orbitofrontal cortex to basal ganglia structures. Normally, these cortico-striato-thalamo-cortical (CSTC) loops filter threat detection. In OCD, hyperactive signaling traps patients in repetitive loops, which DBS targets via the <strong>Anterior Limb of the Internal Capsule (ALIC)</strong>.
+                    </p>
+                </div>
+
+                <!-- OCD IMAGE -->
+                <div class="bg-white p-4 sm:p-6 rounded-2xl border border-pastelpink-200 shadow-sm text-center max-w-2xl mx-auto mb-8">
+                    <img src="OCD.jpg" alt="CSTC Circuitry and ALIC DBS Lead Targeting Diagram" class="w-full rounded-xl shadow-md border border-slate-200" onerror="this.src='OCD.png';">
+                    <p class="text-xs text-slate-500 mt-3 italic leading-relaxed">
+                        CSTC Circuitry, Orbitofrontal Cortex, and ALIC (Anterior Capsule) Targeting Diagram
+                    </p>
+                </div>
+
+                <h3 class="font-bold text-slate-800 text-lg mb-4">Neuronal Signal Comparison</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+                        <span class="text-xs font-bold text-pastelblue-600 uppercase tracking-tight block mb-1">Stage 1</span>
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Normal Brain Wave</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Regulated orbitofrontal cortex signaling responding appropriately to cognitive error detection.
+                        </p>
+                    </div>
+
+                    <div class="bg-pastelpink-50/70 rounded-2xl p-5 border border-pastelpink-200">
+                        <span class="text-xs font-bold text-pastelpink-500 uppercase tracking-tight block mb-1">Stage 2</span>
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Pathological Wave</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Hyperactive, looping fronto-striatal low-frequency activity encoding persistent distress and compulsive urgency.
+                        </p>
+                    </div>
+
+                    <div class="bg-pastelblue-50/70 rounded-2xl p-5 border border-pastelblue-200">
+                        <span class="text-xs font-bold text-pastelblue-600 uppercase tracking-tight block mb-1">Stage 3</span>
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Post-DBS Modulation</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Targeted electrical stimulation dampens hyperactive limbic loops, lowering anxiety and breaking repetitive thought cycles.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 5: DYSTONIA -->
+        <div id="page-dystonia" class="page-content hidden">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-pastelpink-200 mb-8">
+                <div class="max-w-3xl mb-6">
+                    <span class="bg-pastelblue-100 text-pastelblue-600 text-xs font-bold px-3 py-1 rounded-full border border-pastelblue-200 inline-block mb-3">
+                        Condition Focus: Dystonia
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight mb-4">
+                        Dystonia & Globus Pallidus Modulation
+                    </h2>
+                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-4">
+                        <strong>Structure ? Function ? Problem:</strong> Dystonia originates from sensorimotor basal ganglia loops involving the <strong>Globus Pallidus internus (GPi)</strong>. Normally, these structures provide fine-tuned inhibitory control over muscle contractions. In dystonia, reduced inhibition causes simultaneous co-contraction of agonist and antagonist muscles, leading to painful spasms.
+                    </p>
+                </div>
+
+                <!-- DYSTONIA IMAGE -->
+                <div class="bg-white p-4 sm:p-6 rounded-2xl border border-pastelblue-200 shadow-sm text-center max-w-2xl mx-auto mb-8">
+                    <img src="Dystonia.jpg" alt="Neural circuitry and sensorimotor integration in Dystonia" class="w-full rounded-xl shadow-md border border-slate-200" onerror="this.src='Dystonia.png';">
+                    <p class="text-xs text-slate-500 mt-3 italic leading-relaxed">
+                        Neural circuitry and sensorimotor integration in Dystonia
+                    </p>
+                </div>
+
+                <h3 class="font-bold text-slate-800 text-lg mb-4">Neuronal Signal Comparison</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+                        <span class="text-xs font-bold text-pastelblue-600 uppercase tracking-tight block mb-1">Stage 1</span>
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Normal Brain Wave</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Smooth pallidal firing patterns allowing precise, selective muscle activation and relaxation.
+                        </p>
+                    </div>
+
+                    <div class="bg-pastelpink-50/70 rounded-2xl p-5 border border-pastelpink-200">
+                        <span class="text-xs font-bold text-pastelpink-500 uppercase tracking-tight block mb-1">Stage 2</span>
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Pathological Wave</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Irregular, bursting low-frequency oscillations causing generalized muscle co-contraction and painful spasms.
+                        </p>
+                    </div>
+
+                    <div class="bg-pastelblue-50/70 rounded-2xl p-5 border border-pastelblue-200">
+                        <span class="text-xs font-bold text-pastelblue-600 uppercase tracking-tight block mb-1">Stage 3</span>
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Post-DBS Modulation</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Continuous stimulation restores baseline inhibitory output from the globus Pallidus, easing muscle tension.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 6: ESSENTIAL TREMOR -->
+        <div id="page-tremor" class="page-content hidden">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-pastelpink-200 mb-8">
+                <div class="max-w-3xl mb-6">
+                    <span class="bg-pastelpink-100 text-pastelpink-600 text-xs font-bold px-3 py-1 rounded-full border border-pastelpink-200 inline-block mb-3">
+                        Condition Focus: Essential Tremor
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight mb-4">
+                        Essential Tremor & VIM Thalamic Nucleus
+                    </h2>
+                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-4">
+                        <strong>Structure ? Function ? Problem:</strong> Essential tremor involves cerebellar-thalamic feedback loops. Normally, the cerebellum and the <strong>Ventral Intermediate Nucleus (VIM)</strong> of the thalamus coordinate smooth, steady motor execution. In essential tremor, pathological oscillatory feedback loops create rhythmic 4–8 Hz shaking during voluntary movement.
+                    </p>
+                </div>
+
+                <!-- ESSENTIAL TREMOR IMAGE -->
+                <div class="bg-white p-4 sm:p-6 rounded-2xl border border-pastelpink-200 shadow-sm text-center max-w-2xl mx-auto mb-8">
+                    <img src="Essential Tremor.jpg" alt="VIM Thalamic Nucleus and Cerebellothalamic Tract Diagram for Essential Tremor" class="w-full rounded-xl shadow-md border border-slate-200" onerror="this.src='Essential Tremor.png';">
+                    <p class="text-xs text-slate-500 mt-3 italic leading-relaxed">
+                        VIM Thalamic Nucleus and Cerebellothalamic Tract Diagram for Essential Tremor
+                    </p>
+                </div>
+
+                <h3 class="font-bold text-slate-800 text-lg mb-4">Neuronal Signal Comparison</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+                        <span class="text-xs font-bold text-pastelblue-600 uppercase tracking-tight block mb-1">Stage 1</span>
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Normal Brain Wave</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Harmonic cerebellar-thalamic signals guiding fine motor control and steady hand movements.
+                        </p>
+                    </div>
+
+                    <div class="bg-pastelpink-50/70 rounded-2xl p-5 border border-pastelpink-200">
+                        <span class="text-xs font-bold text-pastelpink-500 uppercase tracking-tight block mb-1">Stage 2</span>
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Pathological Wave</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Rhythmic 4–8 Hz oscillatory tremor drives emerging directly from synchronized cerebellar-thalamic loops.
+                        </p>
+                    </div>
+
+                    <div class="bg-pastelblue-50/70 rounded-2xl p-5 border border-pastelblue-200">
+                        <span class="text-xs font-bold text-pastelblue-600 uppercase tracking-tight block mb-1">Stage 3</span>
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Post-DBS Modulation</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            VIM electrode stimulation overrides pathological tremor rhythms, immediately stabilizing hand movement.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 7: HOW DBS WORKS & RESEARCH (Interactive Canvas with 3-button controller) -->
+        <div id="page-howdbs" class="page-content hidden">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-pastelblue-200 mb-8">
+                <div class="max-w-3xl mb-6">
+                    <span class="bg-pastelblue-100 text-pastelblue-600 text-xs font-bold px-3 py-1 rounded-full border border-pastelblue-200 inline-block mb-3">
+                        Science as a Human Endeavour
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight mb-4">
+                        Page 7: Device Mechanics & Biological Connection
+                    </h2>
+                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                        Connecting engineering directly to biology: DBS regulates and supports neural function rather than replacing biological tissue.
+                    </p>
+                </div>
+
+                <!-- Interactive 3-Button Canvas Simulator -->
+                <div class="bg-slate-900 rounded-2xl p-6 text-white mb-8 shadow-lg border border-slate-800">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-4">
+                        <div>
+                            <h3 class="font-bold text-sm text-pastelblue-300 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-pastelblue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                Neural Oscillation Signal Simulator
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-0.5">Observe how high-frequency DBS pulses disrupt pathological brain waves</p>
+                        </div>
+                        
+                        <!-- 3 Mode Buttons -->
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="setSimMode('normal')" id="btn-mode-normal" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700">
+                                Normal
+                            </button>
+                            <button onclick="setSimMode('disrupted')" id="btn-mode-disrupted" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-pastelpink-600 text-white shadow-md border border-pastelpink-500">
+                                Disrupted Wave
+                            </button>
+                            <button onclick="setSimMode('dbs')" id="btn-mode-dbs" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700">
+                                DBS Pulse Applied
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="h-44 bg-slate-950 rounded-xl overflow-hidden border border-slate-800 relative">
+                        <canvas id="neuralCanvas"></canvas>
+                    </div>
+
+                    <p id="sim-status-text" class="text-xs text-slate-400 mt-3 text-left">
+                        Pathological rhythmic synchronization (Disrupted Wave mode active).
+                    </p>
+                </div>
+
+                <!-- Benefits and Limitations/Risks Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-pastelblue-50/50 rounded-2xl p-6 border border-pastelblue-100">
+                        <h3 class="font-bold text-slate-800 text-base mb-3 text-pastelblue-900">Core Clinical Benefits & Regulation</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                            <li><strong>Regulates Function:</strong> Successfully overrides erratic neural signaling without destroying surrounding brain tissue.</li>
+                            <li>Dramatic reduction in tremors, stiffness, and epileptic seizures.</li>
+                            <li>Allows significant decrease in pharmaceutical dosages, reducing drug side-effects.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-pastelpink-50/50 rounded-2xl p-6 border border-pastelpink-100">
+                        <h3 class="font-bold text-slate-800 text-base mb-3 text-pastelpink-900">Technological Limitations & Surgical Risks</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                            <li><strong>What DBS Cannot Do:</strong> It manages symptoms and regulates circuits; it does not cure underlying neurodegeneration or replace dead cells (e.g., dopamine neurons).</li>
+                            <li>Surgical risks include infection at cranial incision or IPG pocket sites and rare intracranial hemorrhage.</li>
+                            <li>Hardware wear requires future battery replacements and occasional lead maintenance.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 8: CONCLUSION & BIBLIOGRAPHY -->
+        <div id="page-conclusion" class="page-content hidden">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-pastelpink-200 mb-8">
+                <div class="max-w-3xl mb-8">
+                    <span class="bg-pastelpink-100 text-pastelpink-600 text-xs font-bold px-3 py-1 rounded-full border border-pastelpink-200 inline-block mb-3">
+                        Project Conclusion & Evaluation
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight mb-4">
+                        Conclusion and Bibliography
+                    </h2>
+                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-4">
+                        <strong>Value of Scientific Understanding:</strong> This investigation demonstrates that developing advanced neurotechnologies like Deep Brain Stimulation is entirely dependent on precise mapping of biological structures (such as the STN, VIM, ANT, and GPi nuclei) and their normal electrical functions. By understanding how cellular miscommunication disrupts neural loops, biomedical engineers were able to engineer precise electrical regulators that restore quality of life worldwide.
+                    </p>
+                </div>
+
+                <h3 class="font-bold text-slate-800 text-lg mb-4">Verified Bibliography & Reliable Sources</h3>
+                <ul class="space-y-4 text-xs sm:text-sm text-slate-700">
+                    <li class="border-b border-pastelblue-100 pb-3">
+                        <strong>National Institute of Neurological Disorders and Stroke (NINDS)</strong><br>
+                        <span>"Deep Brain Stimulation for Parkinson's Disease and Tremors." National Institutes of Health. Available at: </span>
+                        <a href="https://www.ninds.nih.gov" target="_blank" class="text-pastelblue-600 hover:underline">https://www.ninds.nih.gov</a>
+                    </li>
+                    <li class="border-b border-pastelblue-100 pb-3">
+                        <strong>Mayo Clinic</strong><br>
+                        <span>"Deep Brain Stimulation: Patient Care & Health Information - Procedures." Mayo Clinic Medical Proceedings. Available at: </span>
+                        <a href="https://www.mayoclinic.org" target="_blank" class="text-pastelblue-600 hover:underline">https://www.mayoclinic.org</a>
+                    </li>
+                    <li class="border-b border-pastelblue-100 pb-3">
+                        <strong>Parkinson's Foundation</strong><br>
+                        <span>"Understanding Basal Ganglia Circuitry and DBS Therapy Outcomes." Clinical Research Updates. Available at: </span>
+                        <a href="https://www.parkinson.org" target="_blank" class="text-pastelblue-600 hover:underline">https://www.parkinson.org</a>
+                    </li>
+                    <li class="border-b border-pastelblue-100 pb-3">
+                        <strong>Epilepsy Foundation</strong><br>
+                        <span>"Anterior Thalamic Nucleus Stimulation in Drug-Resistant Epilepsy." Medical Research Library. Available at: </span>
+                        <a href="https://www.epilepsy.com" target="_blank" class="text-pastelblue-600 hover:underline">https://www.epilepsy.com</a>
+                    </li>
+                    <li class="border-b border-pastelblue-100 pb-3">
+                        <strong>Cleveland Clinic Journal of Medicine</strong><br>
+                        <span>"Neuromodulation and Cortico-Striato-Thalamo-Cortical Circuits in Psychiatric Disorders." Cleveland Clinic Health Library. Available at: </span>
+                        <a href="https://my.clevelandclinic.org" target="_blank" class="text-pastelblue-600 hover:underline">https://my.clevelandclinic.org</a>
+                    </li>
+                    <li class="border-b border-pastelblue-100 pb-3">
+                        <strong>Radiopaedia</strong><br>
+                        <span>"Deep Brain Stimulator Case and Imaging Study." Radiopaedia Reference Articles. Available at: </span>
+                        <a href="https://radiopaedia.org/cases/deep-brain-stimulator-5" target="_blank" class="text-pastelblue-600 hover:underline">https://radiopaedia.org/cases/deep-brain-stimulator-5</a>
+                    </li>
+                    <li class="border-b border-pastelblue-100 pb-3">
+                        <strong>Enhub Anatomy Library</strong><br>
+                        <span>"Direct and Indirect Pathways of the Basal Ganglia." Neuroanatomy Educational Guide. Available at: </span>
+                        <a href="https://enhub.com/en/library/anatomy/direct-and-indirect-pathways-of-the-basal-ganglia" target="_blank" class="text-pastelblue-600 hover:underline">https://enhub.com/en/library/anatomy/direct-and-indirect-pathways-of-the-basal-ganglia</a>
+                    </li>
+                    <li class="border-b border-pastelblue-100 pb-3">
+                        <strong>Clinical Pub Surgery</strong><br>
+                        <span>"Surgery for Obsessive-Compulsive Disorder and Neurosurgical Targeting." Clinical Publications. Available at: </span>
+                        <a href="https://clinicalpub.com/surgery-for-obsessivecompulsive-disorder/" target="_blank" class="text-pastelblue-600 hover:underline">https://clinicalpub.com/surgery-for-obsessivecompulsive-disorder/</a>
+                    </li>
+                    <li class="border-b border-pastelblue-100 pb-3">
+                        <strong>Neupsy Key</strong><br>
+                        <span>"Deep Brain Stimulation for Tremor and Thalamic Circuitry." Neurology Key Medical Portal. Available at: </span>
+                        <a href="https://neupsykey.com/deep-brain-stimulation-for-tremor-2/" target="_blank" class="text-pastelblue-600 hover:underline">https://neupsykey.com/deep-brain-stimulation-for-tremor-2/</a>
+                    </li>
+                    <li class="border-b border-pastelblue-100 pb-3">
+                        <strong>Johns Hopkins Medicine</strong><br>
+                        <span>"Deep Brain Stimulation (DBS) for Movement Disorders and Dystonia." Department of Neurology and Neurosurgery. Available at: </span>
+                        <a href="https://www.hopkinsmedicine.org/health/treatment-tests-and-therapies/deep-brain-stimulation" target="_blank" class="text-pastelblue-600 hover:underline">https://www.hopkinsmedicine.org/health/treatment-tests-and-therapies/deep-brain-stimulation</a>
+                    </li>
+                    <li class="border-b border-pastelblue-100 pb-3">
+                        <strong>Nature Reviews Neuroscience</strong><br>
+                        <span>"Mechanisms of Deep Brain Stimulation: From Cellular Inhibition to Network Modulation." Nature Portfolio. Available at: </span>
+                        <a href="https://www.nature.com/subjects/deep-brain-stimulation" target="_blank" class="text-pastelblue-600 hover:underline">https://www.nature.com/subjects/deep-brain-stimulation</a>
+                    </li>
+                    <li class="border-b border-pastelblue-100 pb-3">
+                        <strong>Dystonia Medical Research Foundation (DMRF)</strong><br>
+                        <span>"Globus Pallidus Internus (GPi) Deep Brain Stimulation in Generalized and Focal Dystonia." Clinical Treatment Guidelines. Available at: </span>
+                        <a href="https://dystonia-foundation.org/living-dystonia/treatments/deep-brain-stimulation/" target="_blank" class="text-pastelblue-600 hover:underline">https://dystonia-foundation.org/living-dystonia/treatments/deep-brain-stimulation/</a>
+                    </li>
+                    <li class="border-b border-pastelblue-100 pb-3">
+                        <strong>American Association of Neurological Surgeons (AANS)</strong><br>
+                        <span>"Deep Brain Stimulation: Stereotactic Neurosurgery, Hardware Components, and Patient Safety." Patient Information Neurosurgical Library. Available at: </span>
+                        <a href="https://www.aans.org/patients/conditions-treatments/deep-brain-stimulation/" target="_blank" class="text-pastelblue-600 hover:underline">https://www.aans.org/patients/conditions-treatments/deep-brain-stimulation/</a>
+                    </li>
+                    <li>
+                        <strong>Journal of Neurosurgery &amp; Stereotactic Functional Neurosurgery</strong><br>
+                        <span>"Anterior Thalamic Nucleus and Mammillothalamic Tract Targeting in Refractory Epilepsy." National Library of Medicine (PubMed Central). Available at: </span>
+                        <a href="https://pmc.ncbi.nlm.nih.gov/" target="_blank" class="text-pastelblue-600 hover:underline">https://pmc.ncbi.nlm.nih.gov/</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- JavaScript Navigation & Canvas Simulator -->
+    <script>
+        function switchTab(tabId) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
+            
+            // Show selected page
+            const target = document.getElementById('page-' + tabId);
+            if (target) target.classList.remove('hidden');
+
+            // Reset navigation button styles
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = 'nav-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-pastelblue-50 hover:text-pastelblue-600 transition';
+            });
+
+            // Highlight active button mapping
+            const btnMap = {
+                'home': 'nav-home',
+                'epilepsy': 'nav-epilepsy',
+                'parkinsons': 'nav-parkinsons',
+                'ocd': 'nav-ocd',
+                'dystonia': 'nav-dystonia',
+                'tremor': 'nav-tremor',
+                'howdbs': 'nav-howdbs',
+                'conclusion': 'nav-conclusion'
+            };
+
+            const activeBtn = document.getElementById(btnMap[tabId]);
+            if (activeBtn) {
+                activeBtn.className = 'nav-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition bg-pastelpink-100 text-pastelpink-600 border border-pastelpink-200';
+            }
+
+            // Scroll to top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Initialize canvas if switching to How DBS works
+            if (tabId === 'howdbs') {
+                setTimeout(initCanvas, 50);
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Canvas Wave Simulation Logic with 3 Modes
+        let currentMode = 'disrupted'; // 'normal', 'disrupted', 'dbs'
+        let animationId = null;
+
+        function setSimMode(mode) {
+            currentMode = mode;
+            
+            // Update button styles
+            const btnNormal = document.getElementById('btn-mode-normal');
+            const btnDisrupted = document.getElementById('btn-mode-disrupted');
+            const btnDbs = document.getElementById('btn-mode-dbs');
+            const statusText = document.getElementById('sim-status-text');
+
+            // Reset all buttons to inactive slate style
+            const inactiveClass = 'px-3 py-1.5 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700';
+            btnNormal.className = inactiveClass;
+            btnDisrupted.className = inactiveClass;
+            btnDbs.className = inactiveClass;
+
+            if (mode === 'normal') {
+                btnNormal.className = 'px-3 py-1.5 rounded-xl text-xs font-bold transition bg-pastelblue-600 text-white shadow-md border border-pastelblue-500';
+                statusText.innerText = 'Stable baseline neuronal activity (Normal mode active).';
+            } else if (mode === 'disrupted') {
+                btnDisrupted.className = 'px-3 py-1.5 rounded-xl text-xs font-bold transition bg-pastelpink-600 text-white shadow-md border border-pastelpink-500';
+                statusText.innerText = 'Pathological rhythmic synchronization (Disrupted Wave mode active).';
+            } else if (mode === 'dbs') {
+                btnDbs.className = 'px-3 py-1.5 rounded-xl text-xs font-bold transition bg-pastelblue-500 text-white shadow-md border border-pastelblue-400';
+                statusText.innerText = 'High-frequency electrical stimulation applied (DBS Pulse Applied active).';
+            }
+        }
+
+        function initCanvas() {
+            const canvas = document.getElementById('neuralCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            let step = 0;
+
+            function render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.beginPath();
+                ctx.lineWidth = 2.5;
+
+                if (currentMode === 'normal') {
+                    ctx.strokeStyle = '#38bdf8'; // Soft blue
+                } else if (currentMode === 'disrupted') {
+                    ctx.strokeStyle = '#f43f5e'; // Pink/Red
+                } else {
+                    ctx.strokeStyle = '#0284c7'; // Bright blue for DBS pulse
+                }
+
+                const centerY = canvas.height / 2;
+                for (let x = 0; x < canvas.width; x++) {
+                    let y;
+                    if (currentMode === 'normal') {
+                        y = centerY + Math.sin((x + step) * 0.04) * 10 + Math.sin((x + step) * 0.02) * 5;
+                    } else if (currentMode === 'disrupted') {
+                        y = centerY + Math.sin((x + step) * 0.03) * 42 + Math.sin((x + step) * 0.12) * 20;
+                    } else {
+                        y = centerY + Math.sin((x + step) * 0.08) * 14 + (Math.random() - 0.5) * 6;
+                    }
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                step += 2.5;
+                animationId = requestAnimationFrame(render);
+            }
+
+            if (animationId) cancelAnimationFrame(animationId);
+            render();
+        }
+    </script>
+</body>
+</html>
